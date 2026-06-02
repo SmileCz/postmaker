@@ -1,0 +1,3 @@
+rootProject.name = "postmaker"
+
+include("app", "modules:identity", "modules:storage")

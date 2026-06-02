@@ -1,0 +1,23 @@
+plugins {
+    id("java-library")
+}
+
+dependencies {
+    implementation(project(":modules:storage"))
+    implementation("io.micronaut.data:micronaut-data-jdbc:${micronautVersion}")
+
+    compileOnly("jakarta.inject:jakarta.inject-api:2.0.1")
+    compileOnly("io.micronaut:micronaut-inject:${micronautVersion}")
+
+    annotationProcessor("io.micronaut.data:micronaut-data-processor:${micronautVersion}")
+    annotationProcessor("io.micronaut:micronaut-inject-java:${micronautVersion}")
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("25")
+    targetCompatibility = JavaVersion.toVersion("25")
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}

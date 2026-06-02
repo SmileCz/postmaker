@@ -1,0 +1,44 @@
+micronaut:
+  application:
+    name: postmaker
+
+  server:
+    port: ${PORT:8080}
+
+  security:
+    enabled: true
+    authentication: bearer
+
+    intercept-url-map:
+      - pattern: /api/auth/register
+        access:
+          - isAnonymous()
+      - pattern: /api/auth/login
+        access:
+          - isAnonymous()
+      - pattern: /api/auth/google
+        access:
+          - isAnonymous()
+      - pattern: /api/**
+        access:
+          - isAuthenticated()
+
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: ${JWT_GENERATOR_SECRET:change-this-secret-in-development-only-change-this-secret}
+
+datasources:
+  default:
+    url: jdbc:sqlite:./data/app.db?foreign_keys=on
+    driver-class-name: org.sqlite.JDBC
+    db-type: sqlite
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+      locations:
+        - classpath:db/migration
