@@ -18,7 +18,7 @@ dependencies {
     compileOnly("io.micronaut:micronaut-http-client")
 
     runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari")
-    runtimeOnly("org.xerial:sqlite-jdbc:3.53.1.0")
+    runtimeOnly("io.micronaut.sql:micronaut-jdbc-sqlite:${micronautSqlVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.yaml:snakeyaml")
 
