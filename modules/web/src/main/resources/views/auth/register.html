@@ -5,7 +5,7 @@
     <div class="card-body p-4 p-md-5">
         <h1 class="h3 mb-4 text-center">Registrace</h1>
 
-        <div th:if="${error != null and !#strings.isEmpty(error)}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${registerPageModel.hasError()}" class="alert alert-danger" th:text="${registerPageModel.error()}"></div>
 
         <form method="post" action="/register" class="d-grid gap-3">
             <div>
@@ -15,7 +15,7 @@
                     type="email"
                     name="email"
                     class="form-control"
-                    th:value="${registerForm.email()}"
+                    th:value="${registerPageModel.registerForm().email()}"
                     autocomplete="email"
                     required>
             </div>
@@ -28,7 +28,7 @@
                         type="password"
                         name="password"
                         class="form-control"
-                        th:value="${registerForm.password()}"
+                        th:value="${registerPageModel.registerForm().password()}"
                         autocomplete="new-password"
                         required>
                 </div>
@@ -42,7 +42,7 @@
                         type="password"
                         name="confirmPassword"
                         class="form-control"
-                        th:value="${registerForm.confirmPassword()}"
+                        th:value="${registerPageModel.registerForm().confirmPassword()}"
                         autocomplete="new-password"
                         required>
                 </div>

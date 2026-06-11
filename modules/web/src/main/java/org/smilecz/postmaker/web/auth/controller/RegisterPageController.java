@@ -25,8 +25,9 @@ public class RegisterPageController {
     private final IdentityAuthClient identityAuthClient;
 
     @Get("/register")
-    @View("auth/register")
-    public RegisterPageModel registerPage() {return RegisterPageModel.empty(); }
+    public ModelAndView<RegisterPageViewModel> registerPage() {
+        return createRegisterView(RegisterPageModel.empty());
+    }
 
     @Post("/register")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
