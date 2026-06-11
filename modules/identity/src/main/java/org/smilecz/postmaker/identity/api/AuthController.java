@@ -41,6 +41,10 @@ public class AuthController {
             return HttpResponseFactory.INSTANCE.status(HttpStatus.CONFLICT, failResult.errorCode().message());
         }
 
+        if (failResult.errorCode().type() == ErrorType.NONVALIDATE) {
+            return HttpResponseFactory.INSTANCE.status(HttpStatus.BAD_REQUEST, failResult.errorCode().message());
+        }
+
         return HttpResponse.badRequest(failResult.errorCode().code());
 
     }
@@ -58,6 +62,10 @@ public class AuthController {
 
         if (failResult.errorCode().type() == ErrorType.VALIDATION) {
             return HttpResponse.unauthorized();
+        }
+
+        if (failResult.errorCode().type() == ErrorType.NONVALIDATE) {
+            return HttpResponseFactory.INSTANCE.status(HttpStatus.BAD_REQUEST, failResult.errorCode().message());
         }
 
         return HttpResponse.badRequest(failResult.errorCode().code());

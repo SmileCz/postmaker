@@ -37,7 +37,7 @@ public class RegisterUserHandler {
         var userEntity = new UserEntity();
         userEntity.setEmail(normalizedEmail);
         userEntity.setDisplayName(command.displayName());
-        userEntity.setStatus(UserStatus.);
+        userEntity.setStatus(UserStatus.PENDING);
         var savedUserEntity = userRepository.save(userEntity);
 
         var credential = new PasswordCredentialEntity();

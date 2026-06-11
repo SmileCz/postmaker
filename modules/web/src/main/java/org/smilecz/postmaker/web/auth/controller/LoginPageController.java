@@ -45,7 +45,6 @@ public class LoginPageController {
 
             var errorMessage = resolveLoginErrorMessage(ex);
             var loginView = createLoginView(LoginPageModel.withError(loginForm,errorMessage));
-            System.out.println("ERROR MODEL: hasError=" + loginView.getModel().toString());
             return HttpResponse.ok(loginView);
         }
 
@@ -59,7 +58,26 @@ public class LoginPageController {
         if (exception.getStatus() == HttpStatus.UNAUTHORIZED) {
             return "Invalid email or password.";
         }
+
+        if (exception.getStatus() == HttpStatus.BAD_REQUEST) {
+            return extractClientMessage(exception.getMessage())
+                .orElse("An unexpected error occurred. Please try again.");
+        }
         return "An unexpected error occurred. Please try again.";
+    }
+
+    private java.util.Optional<String> extractClientMessage(String message) {
+        if (message == null || message.isBlank()) {
+            return java.util.Optional.empty();
+        }
+
+        String prefix = "Client '/api/auth': ";
+        if (message.startsWith(prefix)) {
+            String clientMessage = message.substring(prefix.length()).trim();
+            return clientMessage.isBlank() ? java.util.Optional.empty() : java.util.Optional.of(clientMessage);
+        }
+
+        return java.util.Optional.of(message.trim());
     }
 
 }

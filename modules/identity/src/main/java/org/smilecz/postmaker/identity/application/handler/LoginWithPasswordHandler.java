@@ -31,9 +31,16 @@ public class LoginWithPasswordHandler {
         }
 
         var user = userOptional.get();
+
+        if (UserStatus.PENDING == user.getStatus()) {
+            return Result.failure(ErrorCode.USER_NOT_ACTIVE);
+        }
+
         if (UserStatus.ACTIVE != user.getStatus()) {
             return Result.failure(ErrorCode.INVALID_CREDENTIALS);
         }
+
+
 
         var credentialOptional =  passwordCredentialRepository.findById(user.getId());
 
