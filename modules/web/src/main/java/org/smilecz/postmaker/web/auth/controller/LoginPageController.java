@@ -45,7 +45,7 @@ public class LoginPageController {
 
             var errorMessage = resolveLoginErrorMessage(ex);
             var loginView = createLoginView(LoginPageModel.withError(loginForm,errorMessage));
-
+            System.out.println("ERROR MODEL: hasError=" + loginView.getModel().toString());
             return HttpResponse.ok(loginView);
         }
 

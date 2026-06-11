@@ -8,13 +8,11 @@ import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.views.ModelAndView;
-import io.micronaut.views.View;
 import lombok.RequiredArgsConstructor;
 import org.smilecz.postmaker.identity.api.dto.RegisterRequest;
 import org.smilecz.postmaker.web.auth.client.IdentityAuthClient;
 import org.smilecz.postmaker.web.auth.form.RegisterForm;
 import org.smilecz.postmaker.web.auth.model.RegisterPageModel;
-import org.smilecz.postmaker.web.auth.viewModel.RegisterPageViewModel;
 
 import java.net.URI;
 
@@ -25,7 +23,7 @@ public class RegisterPageController {
     private final IdentityAuthClient identityAuthClient;
 
     @Get("/register")
-    public ModelAndView<RegisterPageViewModel> registerPage() {
+    public ModelAndView<RegisterPageModel> registerPage() {
         return createRegisterView(RegisterPageModel.empty());
     }
 
@@ -35,7 +33,7 @@ public class RegisterPageController {
     public HttpResponse<?> register(@Body RegisterForm registerForm) {
 
         try {
-            identityAuthClient.register(new RegisterRequest(registerForm.email(), registerForm.password(),""));
+            identityAuthClient.register(new RegisterRequest(registerForm.email(), registerForm.password(),registerForm.email()));
             return HttpResponse.seeOther(URI.create("/login"));
         }
         catch (HttpClientResponseException ex) {
@@ -46,8 +44,8 @@ public class RegisterPageController {
 
     }
 
-    private ModelAndView<RegisterPageViewModel> createRegisterView(RegisterPageModel registerPageModel) {
-        return new ModelAndView<>("auth/register", new RegisterPageViewModel(registerPageModel));
+    private ModelAndView<RegisterPageModel> createRegisterView(RegisterPageModel registerPageModel) {
+        return new ModelAndView<>("auth/register", registerPageModel);
     }
 
     private String resolveRegisterErrorMessage(HttpClientResponseException ex) {

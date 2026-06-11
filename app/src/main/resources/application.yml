@@ -1,3 +1,10 @@
+logger:
+  levels:
+    io.micronaut.http.server: TRACE
+    io.micronaut.web.router: TRACE
+    org.thymeleaf: DEBUG
+    io.micronaut.views: DEBUG
+
 micronaut:
   application:
     name: postmaker

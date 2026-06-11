@@ -2,10 +2,14 @@
 <html lang="cs" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/base :: layout(title='Přihlášení', content=~{::body})}">
 <body>
 <div class="card shadow-sm border-0" style="max-width: 28rem; width: 100%;">
+
+    <div th:each="entry : ${#ctx.variableNames}">
+        <span th:text="${entry}"></span>
+    </div>
     <div class="card-body p-4 p-md-5">
         <h1 class="h3 mb-4 text-center">Přihlášení</h1>
 
-        <div th:if="${loginPageModel.hasError()}" class="alert alert-danger" th:text="${loginPageModel.error()}"></div>
+        <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
 
         <form method="post" action="/login" class="d-grid gap-3">
             <div>
