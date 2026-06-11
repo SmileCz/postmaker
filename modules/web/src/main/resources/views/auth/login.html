@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="cs" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/base :: layout(title='Přihlášení', content=~{::body})}">
+<body>
+<div class="card shadow-sm border-0" style="max-width: 28rem; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 mb-4 text-center">Přihlášení</h1>
+
+        <div th:if="${loginPageModel.hasError()}" class="alert alert-danger" th:text="${loginPageModel.error()}"></div>
+
+        <form method="post" action="/login" class="d-grid gap-3">
+            <div>
+                <label for="email" class="form-label">E-mail</label>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    th:value="${loginPageModel.loginForm().email()}"
+                    autocomplete="email"
+                    required>
+            </div>
+
+            <div>
+                <label for="password" class="form-label">Heslo</label>
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    class="form-control"
+                    autocomplete="current-password"
+                    required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Přihlásit</button>
+        </form>
+
+        <p class="text-center mt-4 mb-0">
+            Nemáš účet?
+            <a href="/register">Registrovat</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.smilecz'
+version = '0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("io.micronaut:micronaut-inject-java")
+    annotationProcessor(platform("io.micronaut.platform:micronaut-platform:${micronautVersion}"))
+
+    implementation(project(":modules:identity"))
+    implementation(platform("io.micronaut.platform:micronaut-platform:${micronautVersion}"))
+    implementation("io.micronaut:micronaut-inject")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.micronaut.views:micronaut-views-thymeleaf")
+
+    compileOnly("jakarta.validation:jakarta.validation-api")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+
+    testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.23.0")
+    testImplementation("io.micronaut.security:micronaut-security")
+    testImplementation(platform("io.micronaut.platform:micronaut-platform:${micronautVersion}"))
+
+    integrationTestImplementation("io.micronaut:micronaut-http-server-netty")
+    integrationTestImplementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    integrationTestRuntimeOnly("io.micronaut.sql:micronaut-jdbc-sqlite:${micronautSqlVersion}")
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}

@@ -10,6 +10,15 @@ micronaut:
     authentication: bearer
 
     intercept-url-map:
+      - pattern: /
+        access:
+          - isAnonymous()
+      - pattern: /login
+        access:
+          - isAnonymous()
+      - pattern: /register
+        access:
+          - isAnonymous()
       - pattern: /api/auth/register
         access:
           - isAnonymous()

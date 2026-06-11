@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="cs" xmlns:th="http://www.thymeleaf.org" th:replace="~{layouts/base :: layout(title='Registrace', content=~{::body})}">
+<body>
+<div class="card shadow-sm border-0" style="max-width: 28rem; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 mb-4 text-center">Registrace</h1>
+
+        <div th:if="${error != null and !#strings.isEmpty(error)}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form method="post" action="/register" class="d-grid gap-3">
+            <div>
+                <label for="email" class="form-label">E-mail</label>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    th:value="${registerForm.email()}"
+                    autocomplete="email"
+                    required>
+            </div>
+
+            <div>
+                <label for="password" class="form-label">Heslo</label>
+                <div class="input-group">
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        th:value="${registerForm.password()}"
+                        autocomplete="new-password"
+                        required>
+                </div>
+            </div>
+
+            <div>
+                <label for="confirmPassword" class="form-label">Potvrzení hesla</label>
+                <div class="input-group">
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        name="confirmPassword"
+                        class="form-control"
+                        th:value="${registerForm.confirmPassword()}"
+                        autocomplete="new-password"
+                        required>
+                </div>
+            </div>
+
+            <button
+                id="passwordVisibilityToggle"
+                type="button"
+                class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2"
+                aria-label="Zobrazit nebo skrýt hesla">
+                <span id="passwordVisibilityIcon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8A13.133 13.133 0 0 1 8 3.5c2.88 0 5.395 1.66 6.827 4.5A13.133 13.133 0 0 1 8 12.5C5.12 12.5 2.605 10.84 1.173 8z"/>
+                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+                    </svg>
+                </span>
+            </button>
+
+            <button type="submit" class="btn btn-primary w-100">Registrovat</button>
+        </form>
+
+        <p class="text-center mt-4 mb-0">
+            Už máš účet?
+            <a href="/login">Přihlásit</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const toggle = document.getElementById("passwordVisibilityToggle");
+    const icon = document.getElementById("passwordVisibilityIcon");
+
+    const eyeIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8A13.133 13.133 0 0 1 8 3.5c2.88 0 5.395 1.66 6.827 4.5A13.133 13.133 0 0 1 8 12.5C5.12 12.5 2.605 10.84 1.173 8z"/>
+            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+        </svg>`;
+
+    const eyeSlashIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M13.359 11.238C11.947 12.66 10.14 13.5 8 13.5c-5 0-8-5.5-8-5.5a14.06 14.06 0 0 1 2.1-2.72L.146 3.326l.708-.708 15 15-.708.708-2.36-2.36-1.427-1.427zM3.53 5.41A13.13 13.13 0 0 0 1.173 8C2.605 10.84 5.12 12.5 8 12.5c1.78 0 3.32-.65 4.604-1.51l-1.553-1.553A2.5 2.5 0 0 1 7.06 6.934L5.164 5.038a13.43 13.43 0 0 0-1.633.372z"/>
+            <path d="M8 4.5c.464 0 .91.08 1.33.228l1.435 1.435A2.5 2.5 0 0 1 8.44 9.94l2.27 2.27A4.5 4.5 0 0 0 8 5.5a4.48 4.48 0 0 0-1.238.174l-1.09-1.09A5.42 5.42 0 0 1 8 4.5z"/>
+        </svg>`;
+
+    const setVisible = (visible) => {
+        passwordInput.type = visible ? "text" : "password";
+        confirmPasswordInput.type = visible ? "text" : "password";
+        confirmPasswordInput.readOnly = visible;
+        if (visible) {
+            confirmPasswordInput.value = passwordInput.value;
+        }
+        icon.innerHTML = visible ? eyeSlashIcon : eyeIcon;
+        toggle.setAttribute("aria-pressed", String(visible));
+    };
+
+    toggle.addEventListener("click", () => {
+        setVisible(passwordInput.type === "password");
+    });
+
+    passwordInput.addEventListener("input", () => {
+        if (confirmPasswordInput.readOnly) {
+            confirmPasswordInput.value = passwordInput.value;
+        }
+    });
+
+    setVisible(false);
+</script>
+</body>
+</html>

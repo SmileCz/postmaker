@@ -3,6 +3,8 @@ package org.smilecz.postmaker.identity.application.handler;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import org.smile.cz.postmaker.shared.result.ErrorCode;
+import org.smile.cz.postmaker.shared.result.Result;
 import org.smilecz.postmaker.identity.application.command.RegisterUserCommand;
 import org.smilecz.postmaker.identity.domain.UserStatus;
 import org.smilecz.postmaker.identity.infrastructure.persistance.PasswordCredentialEntity;
@@ -25,11 +27,11 @@ public class RegisterUserHandler {
     private final JwtTokenService jwtTokenService;
 
     @Transactional
-    public String handle(RegisterUserCommand command) {
+    public Result<String> handle(RegisterUserCommand command) {
         var normalizedEmail = command.email().toLowerCase(Locale.ROOT).trim();
 
         if (userRepository.findByEmail(normalizedEmail).isPresent()) {
-            throw new IllegalArgumentException("User with email " + normalizedEmail + " already exists");
+            return Result.failure(ErrorCode.USER_ALREADY_EXISTS);
         }
 
         var userEntity = new UserEntity();
@@ -43,6 +45,8 @@ public class RegisterUserHandler {
         credential.setPasswordHash(passwordHasher.hash(command.password()));
         credential.setPasswordChangedAt(Instant.now());
         passwordCredentialRepository.save(credential);
-        return jwtTokenService.createAccessToken(savedUserEntity);
+
+        var token = jwtTokenService.createAccessToken(savedUserEntity);
+        return Result.success(token);
     }
 }

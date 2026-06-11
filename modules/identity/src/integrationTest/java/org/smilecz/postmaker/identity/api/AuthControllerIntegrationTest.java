@@ -1,11 +1,14 @@
 package org.smilecz.postmaker.identity.api;
 
+import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.smilecz.postmaker.identity.api.dto.AuthResponse;
 import org.smilecz.postmaker.identity.api.dto.RegisterRequest;
+import org.smilecz.postmaker.identity.application.handler.LoginWithPasswordHandler;
 import org.smilecz.postmaker.identity.application.handler.RegisterUserHandler;
 import org.smilecz.postmaker.identity.domain.UserStatus;
 import org.smilecz.postmaker.identity.infrastructure.persistance.UserEntity;
@@ -17,10 +20,7 @@ import io.micronaut.security.token.generator.TokenGenerator;
 
 import java.sql.DriverManager;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest(propertySources = "classpath:identity-it.properties", transactional = false)
 class AuthControllerIntegrationTest {
@@ -44,12 +44,8 @@ class AuthControllerIntegrationTest {
     @BeforeEach
     @SneakyThrows
     void setUpSchema() {
-        controller = new AuthController(new RegisterUserHandler(
-                userRepository,
-                passwordCredentialRepository,
-                passwordHasher,
-                new JwtTokenService(tokenGenerator)
-        ));
+        controller = new AuthController(new RegisterUserHandler(userRepository, passwordCredentialRepository, passwordHasher, new JwtTokenService(tokenGenerator)),
+                new LoginWithPasswordHandler(userRepository, passwordCredentialRepository, passwordHasher, new JwtTokenService(tokenGenerator)));
         try (var connection = DriverManager.getConnection(JDBC_URL, "sa", "");
              var statement = connection.createStatement()) {
             statement.executeUpdate("drop table if exists identity_password_credential");
@@ -83,7 +79,12 @@ class AuthControllerIntegrationTest {
     @Test
     @SneakyThrows
     void register_persistsUserAndPasswordCredential() {
-        var response = controller.register(new RegisterRequest("User@Example.com", "secret123", "Jane Doe"));
+        var httpResponse = controller.register(new RegisterRequest("User@Example.com", "secret123", "Jane Doe"));
+
+        assertEquals(HttpStatus.OK, httpResponse.getStatus());
+        assertInstanceOf(AuthResponse.class, httpResponse.body());
+
+        AuthResponse response = (AuthResponse) httpResponse.body();
 
         assertEquals("Bearer", response.tokenType());
         assertNotNull(response.accesToken());
@@ -114,9 +115,11 @@ class AuthControllerIntegrationTest {
     void register_rejectsDuplicateEmailAfterNormalization() {
         controller.register(new RegisterRequest("User@Example.com", "secret123", "Jane Doe"));
 
-        var exception = assertThrows(IllegalArgumentException.class,
-                () -> controller.register(new RegisterRequest("user@example.com", "another123", "Jane Two")));
+        var httpResponse = controller.register(new RegisterRequest("user@example.com", "another123", "Jane Two"));
 
-        assertEquals("User with email user@example.com already exists", exception.getMessage());
+        assertEquals(HttpStatus.CONFLICT, httpResponse.getStatus());
+        assertEquals("User with the given email already exists.", httpResponse.reason());
+
+
     }
 }

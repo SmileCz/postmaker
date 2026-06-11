@@ -1,5 +1,6 @@
 package org.smilecz.postmaker.identity.api;
 
+import io.micronaut.http.HttpResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +11,7 @@ import org.smilecz.postmaker.identity.api.dto.AuthResponse;
 import org.smilecz.postmaker.identity.api.dto.RegisterRequest;
 import org.smilecz.postmaker.identity.application.command.RegisterUserCommand;
 import org.smilecz.postmaker.identity.application.handler.RegisterUserHandler;
+import org.smile.cz.postmaker.shared.result.Result;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,17 +30,17 @@ class AuthControllerTest {
 
     @Test
     void register_forwardsRequestToHandlerAndReturnsBearerToken() {
-        when(registerUserHandler.handle(any())).thenReturn("token-123");
+        when(registerUserHandler.handle(any())).thenReturn(Result.success("token-123"));
         var request = new RegisterRequest("User@Example.com", "secret123", "Jane Doe");
 
-        AuthResponse response = controller.register(request);
+        HttpResponse<?> response = controller.register(request);
 
         var commandCaptor = ArgumentCaptor.forClass(RegisterUserCommand.class);
         verify(registerUserHandler).handle(commandCaptor.capture());
 
         assertEquals(new RegisterUserCommand("User@Example.com", "secret123", "Jane Doe"), commandCaptor.getValue());
-        assertEquals("token-123", response.accesToken());
-        assertEquals("Bearer", response.tokenType());
+        assertEquals(200, response.getStatus().getCode());
+        assertEquals(AuthResponse.bearer("token-123"), response.body());
     }
 
     @Test

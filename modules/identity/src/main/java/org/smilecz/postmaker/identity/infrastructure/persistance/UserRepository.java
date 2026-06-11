@@ -8,8 +8,6 @@ import java.util.Optional;
 
 @JdbcRepository(dialect = Dialect.ANSI)
 public interface UserRepository {
-    @Query("SELECT * FROM identity_user WHERE email = :email")
     Optional<UserEntity> findByEmail(String email);
-
     UserEntity save(UserEntity userEntity);
 }

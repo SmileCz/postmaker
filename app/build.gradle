@@ -6,7 +6,9 @@ plugins {
 
 dependencies {
     implementation(project(":modules:identity"))
-    implementation(project(":modules:storage"))
+    implementation(project(":modules:shared"))
+    implementation(project(":modules:web"))
+
 
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("io.micronaut.security:micronaut-security-jwt")
@@ -32,15 +34,10 @@ application {
     mainClass = "org.smilecz.Application"
 }
 
-java {
-    sourceCompatibility = JavaVersion.toVersion("25")
-    targetCompatibility = JavaVersion.toVersion("25")
-}
-
 graalvmNative.toolchainDetection = false
 graalvmNative {
     binaries {
-        all {
+        configureEach {
             buildArgs.add("-H:+SharedArenaSupport")
         }
     }

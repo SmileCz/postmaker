@@ -8,11 +8,6 @@ dependencies {
     annotationProcessor("io.micronaut:micronaut-inject-java:${micronautVersion}")
 }
 
-java {
-    sourceCompatibility = JavaVersion.toVersion("25")
-    targetCompatibility = JavaVersion.toVersion("25")
-}
-
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }

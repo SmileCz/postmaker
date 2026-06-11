@@ -1,3 +1,11 @@
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.testing.Test
+import org.gradle.api.GradleException
+
+if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) {
+    throw new GradleException("This build requires JDK 25. Current Gradle JVM is ${JavaVersion.current()}. Configure Gradle JVM to 25 in your IDE or set org.gradle.java.home to a JDK 25 installation.")
+}
+
 allprojects {
     group = "org.smilecz"
     version = "0.1"
@@ -7,3 +15,54 @@ allprojects {
     }
 }
 
+subprojects {
+    plugins.withType(JavaPlugin) {
+        java {
+            sourceCompatibility = JavaVersion.VERSION_25
+            targetCompatibility = JavaVersion.VERSION_25
+        }
+
+        sourceSets {
+            integrationTest {
+                compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
+                runtimeClasspath += output + compileClasspath + configurations.testRuntimeClasspath
+            }
+        }
+
+        configurations {
+            integrationTestImplementation.extendsFrom testImplementation
+            integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+        }
+
+        dependencies {
+            integrationTestAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+            integrationTestAnnotationProcessor("io.micronaut:micronaut-inject-java")
+            integrationTestAnnotationProcessor("io.micronaut.data:micronaut-data-processor")
+            integrationTestAnnotationProcessor(platform("io.micronaut.platform:micronaut-platform:${micronautVersion}"))
+            integrationTestCompileOnly("io.micronaut.data:micronaut-data-model")
+            integrationTestCompileOnly("org.projectlombok:lombok:1.18.30")
+        }
+
+        tasks.withType(Test).configureEach {
+            useJUnitPlatform()
+
+            def mockitoAgent = configurations.findByName("mockitoAgent")
+            if (mockitoAgent != null) {
+                jvmArgs += "-javaagent:${mockitoAgent.asPath}"
+            }
+        }
+
+        tasks.register("integrationTest", Test) {
+            description = "Runs the integration tests."
+            group = "verification"
+            testClassesDirs = sourceSets.integrationTest.output.classesDirs
+            classpath = sourceSets.integrationTest.runtimeClasspath
+            useJUnitPlatform()
+            shouldRunAfter(tasks.test)
+        }
+
+        tasks.named("check") {
+            dependsOn(tasks.named("integrationTest"))
+        }
+    }
+}

@@ -1,3 +1,6 @@
 rootProject.name = "postmaker"
 
-include("app", "modules:identity", "modules:storage")
+include("app", "modules:identity")
+
+include 'modules:shared'
+include 'modules:web'
