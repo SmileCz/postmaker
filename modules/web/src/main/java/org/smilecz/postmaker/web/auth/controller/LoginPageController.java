@@ -18,7 +18,6 @@ import org.smilecz.postmaker.identity.api.dto.LoginRequest;
 import org.smilecz.postmaker.web.auth.client.IdentityAuthClient;
 import org.smilecz.postmaker.web.auth.form.LoginForm;
 import org.smilecz.postmaker.web.auth.model.LoginPageModel;
-import org.smilecz.postmaker.web.auth.viewModel.LoginPageViewModel;
 
 import java.net.URI;
 
@@ -29,7 +28,7 @@ public class LoginPageController {
     private final IdentityAuthClient identityAuthClient;
 
     @Get("/login")
-    public ModelAndView<LoginPageViewModel> loginPage() {
+    public ModelAndView<LoginPageModel> loginPage() {
         return createLoginView(LoginPageModel.empty());
     }
 
@@ -52,8 +51,8 @@ public class LoginPageController {
 
     }
 
-    private ModelAndView<LoginPageViewModel> createLoginView(LoginPageModel loginPageModel) {
-        return new ModelAndView<>("auth/login", new LoginPageViewModel(loginPageModel));
+    private ModelAndView<LoginPageModel> createLoginView(LoginPageModel loginPageModel) {
+        return new ModelAndView<>("auth/login", loginPageModel);
     }
 
     private String resolveLoginErrorMessage(HttpClientResponseException exception) {
